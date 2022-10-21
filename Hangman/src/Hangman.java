@@ -29,12 +29,13 @@ public class Hangman{
     public static void boot() throws IOException, InterruptedException {
         fileNames[0] = "resetLibrary.txt";
         fileNames[1] = "currentLibrary.txt";
-        /*try{
-            new File(fileNames[0]);
-            new File(fileNames[1]);
-        }catch(Exception e){
-            System.out.println("wrong");
-        }*/
+        try{
+            Path newFilePath = Paths.get(fileNames[0]);
+            Files.createFile(newFilePath);
+            newFilePath = Paths.get(fileNames[1]);
+            Files.createFile(newFilePath);
+        } catch (IOException e) {
+        }
         clearConsole();
         System.out.println("Initializing: ");
         converter.convert();
@@ -191,13 +192,6 @@ public class Hangman{
         System.out.print("Exit via /exit");
         System.out.print("Word: ");
         String word = scan.next();
-        /*char[] wordToGuess = word.toCharArray();
-        for(int i = 0; i < wordToGuess.length; i++){
-            if(wordToGuess[i] > 122 || wordToGuess[i] < 97){
-                System.out.println("Please just use lowercase letters!");
-                pickWord();
-            }
-        }*/
         if(Objects.equals(word, "/exit")){
             System.out.println("Do you want to stop?");
             System.out.print("[y/n]: ");
