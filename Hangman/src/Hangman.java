@@ -390,6 +390,7 @@ public class Hangman{
         }
         writeIntoFile();
     }
+    //TODO add command and ability to remove words
     public static void saveLibrary(String choice, Scanner scan) throws IOException, InterruptedException {
         String newFile;
         if(Objects.equals(choice, "y") || Objects.equals(choice, "Y") || Objects.equals(choice, "yes") || Objects.equals(choice, "Yes")){
