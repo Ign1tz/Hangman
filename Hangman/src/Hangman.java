@@ -37,12 +37,14 @@ public class Hangman{
         } catch (IOException e) {
         }
         clearConsole();
+        prepFile();
         System.out.println("Initializing: ");
         converter.convert();
     }
     public static void makeFile( String newFile) throws InterruptedException, IOException {
         Path newFilePath = Paths.get(newFile + ".txt");
         Files.createFile(newFilePath);
+        String newFileName = newFile + ".txt";
         System.out.println("New File \"" + newFile + "\" added");
         System.out.println("3");
         TimeUnit.SECONDS.sleep(1);
@@ -51,7 +53,8 @@ public class Hangman{
         System.out.println("1");
         TimeUnit.SECONDS.sleep(1);
         System.out.println("Saving to new File!");
-        converter.convert();
+        System.out.println(newFileName);
+        converter.readToNewFile(newFileName);
     }
     public static void prepFile() throws IOException {
         FileWriter writer = new FileWriter(fileNames[1], true);
@@ -476,7 +479,6 @@ public class Hangman{
 
     public static void main(String[] args) throws IOException, InterruptedException {
         boot();
-        prepFile();
         menu();
     }
 }

@@ -31,7 +31,7 @@ public class converter {
     }
     public static double countLines2() throws IOException {
         double lines = 0;
-        BufferedReader reader = new BufferedReader(new FileReader(fileName[fileCounter - 1]));
+        BufferedReader reader = new BufferedReader(new FileReader(fileName[1]));
         while(reader.readLine() != null){
             lines++;
         }
@@ -65,7 +65,8 @@ public class converter {
     public static void readWrite(String line, char[] temp) throws IOException {
         String  testLine;
         boolean clear = false;
-        if(countLines2() == 0){
+        double lineCount = countLines2();
+        if(lineCount == 0){
             FileWriter writer = new FileWriter(fileName[fileCounter - 1], clear);
             clear = true;
             BufferedWriter bwriter = new BufferedWriter(writer);
@@ -73,36 +74,63 @@ public class converter {
             bwriter.newLine();
             bwriter.close();
         }else if (!newFile){
-            for (int i = 0; i < countLines2(); i++) {
+            for (int i = 0; i < lineCount; i++) {
                 Stream<String> testLines = Files.lines(Paths.get(fileName[fileCounter - 1]));
                 testLine = testLines.skip(i).findFirst().get();
                 char[] temp2 = testLine.toCharArray();
                 if (Arrays.equals(temp2, temp)) {
                     break;
-                } else if (i == (countLines2() - 1)) {
+                } else if (i == (lineCount - 1)) {
                     clear = true;
                     FileWriter writer = new FileWriter(fileName[fileCounter - 1], clear);
                     BufferedWriter bwriter = new BufferedWriter(writer);
                     bwriter.write(temp);
                     bwriter.newLine();
                     bwriter.close();
+                    lineCount++;
                     break;
                 }
             }
         }else{
-            for (int i = 0; i < countLines(); i++) {
+            for (int i = 0; i < lineCount; i++) {
                 clear = true;
                 FileWriter writer = new FileWriter(fileName[fileCounter - 1], clear);
                 BufferedWriter bwriter = new BufferedWriter(writer);
                 bwriter.write(temp);
                 bwriter.newLine();
                 bwriter.close();
+                lineCount++;
             }
         }
     }
     public static void reset() throws IOException, InterruptedException {
         new FileWriter(fileName[1], false).close();
         lowercase();
+    }
+    public static void readToNewFile(String newFile) throws IOException, InterruptedException {
+        String word;
+        int count = (int) countLines2();
+        for(int x = 0; x < count; x++){
+            /*FileReader reader = new FileReader(newFile);
+            while((i=reader.read())!=-1){
+                System.out.print((char)i);
+            }*/
+
+            Stream<String> testLines = Files.lines(Paths.get("currentLibrary.txt"));
+            word = testLines.skip(x).findFirst().get();
+            char[] temp2 = word.toCharArray();
+            saveToNewFile(newFile, temp2);
+            if(x == count -1){
+                Hangman.menu();
+            }
+        }
+    }
+    public static void saveToNewFile(String newFile, char[] word) throws IOException {
+        FileWriter writer = new FileWriter(newFile, true);
+        BufferedWriter bwriter = new BufferedWriter(writer);
+        bwriter.write(word);
+        bwriter.newLine();
+        bwriter.close();
     }
     public static String percent(int percent) throws IOException {
         String visualPercent = "[          ]";
