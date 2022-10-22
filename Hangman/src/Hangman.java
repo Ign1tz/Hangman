@@ -26,6 +26,8 @@ public class Hangman{
 
         return fileNames;
     }
+    //TODO get fileCounter form config file
+    //TODO get all fileNames form config/fileNames file
     public static void boot() throws IOException, InterruptedException {
         fileNames[0] = "resetLibrary.txt";
         fileNames[1] = "currentLibrary.txt";
@@ -41,6 +43,8 @@ public class Hangman{
         System.out.println("Initializing: ");
         converter.convert();
     }
+    //TODO add config file
+    //TODO (add fileNames file)
     public static void makeFile( String newFile) throws InterruptedException, IOException {
         Path newFilePath = Paths.get(newFile + ".txt");
         Files.createFile(newFilePath);

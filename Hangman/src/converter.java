@@ -13,6 +13,7 @@ public class converter {
     public static void convert() throws IOException, InterruptedException {
         lowercase();
     }
+    //TODO add way to reset currentLibrary -> copy desired Library
     public static int isNewFile(){
         if(newFile){
             inputFileCounter = 1;
