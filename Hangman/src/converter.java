@@ -117,7 +117,7 @@ public class converter {
                 System.out.print((char)i);
             }*/
 
-            Stream<String> testLines = Files.lines(Paths.get("currentLibrary.txt"));
+            Stream<String> testLines = Files.lines(Paths.get("currentLibrary.json"));
             word = testLines.skip(x).findFirst().get();
             char[] temp2 = word.toCharArray();
             saveToNewFile(newFile, temp2);
