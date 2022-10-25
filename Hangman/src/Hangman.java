@@ -392,18 +392,19 @@ public class Hangman{
             }
             System.out.println("Please select yes or no!");
             commands(scan, input, play);
-        }/*else if(Objects.equals(input, "/loadNewData")){
-            System.out.println("Do you want to load new data?");
+        }else if(Objects.equals(input, "/clearLibrary")){
+            System.out.println("Do you want to clear the active library?");
             System.out.print("[y/n]: ");
             String choice = scan.nextLine();
             if(Objects.equals(choice, "y") || Objects.equals(choice, "Y") || Objects.equals(choice, "yes") || Objects.equals(choice, "Yes")){
-                converter.lowercase();
+                converter.reset();
+                writeIntoFile();
             }else if (Objects.equals(choice, "n") || Objects.equals(choice, "N") || Objects.equals(choice, "no") || Objects.equals(choice, "NO")){
                 writeIntoFile();
             }
             System.out.println("Please select yes or no!");
             commands(scan, input, play);
-        }*/else if(Objects.equals(input, "/resetData")){
+        }else if(Objects.equals(input, "/resetData")){
             System.out.println("Do you want to reset data?");
             System.out.print("[y/n]: ");
             String choice = scan.nextLine();
@@ -421,17 +422,16 @@ public class Hangman{
             System.out.println();
             System.out.println("Possible commands:");
             System.out.println("/exit : Exit to menu.");
+            System.out.println("/clearLibrary : Clears active library.");
             System.out.println("/resetData : Resets active library to match source file.");
-            System.out.println("/saveCurrentLibrary : Saves current library of word to new file.");
-            System.out.println("/LoadLibrary : Loads different library into current library.");
+            System.out.println("/saveCurrentLibrary : Saves active library to new file.");
+            System.out.println("/LoadLibrary : Loads different library into active library.");
             System.out.println("/help : Opens help menu.");
         }else if(Objects.equals(input, "/loadLibrary")){
             loadLibrary(scan);
         }
         writeIntoFile();
     }
-    //TODO add command and ability to remove words
-    //TODO add command to clear current library
     public static void loadLibrary(Scanner scan) throws IOException, InterruptedException {
         System.out.println("Do you want to load a different library?");
         System.out.print("[y/n]: ");

@@ -6,10 +6,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class converter {
-    public static int numberOfFiles() throws IOException {
-       int numberOfFiles = Hangman.numberOfFiles();
-       return numberOfFiles;
-    }
     public static String[] fileName = Hangman.fileNames();
     public static boolean newFile = Hangman.isNewFile;
     public static int actualNumberOfFiles;
@@ -22,10 +18,6 @@ public class converter {
         }
     }
 
-    public static int current() throws IOException {
-        int current = Hangman.activeFile();
-        return current;
-    }
     public static void convert() throws IOException, InterruptedException {
         lowercase();
     }
@@ -213,7 +205,7 @@ public class converter {
         int newLibraryLines = (int) countLinesNew(whatToLoad);
         loadToCurrentLibrary(newLibraryLines, whatToLoad);
     }
-    public static void reset() throws IOException, InterruptedException {
+    public static void reset() throws IOException{
         new FileWriter("currentLibrary.json", false).close();
     }
     public static void main(String[] args) throws IOException, InterruptedException {
