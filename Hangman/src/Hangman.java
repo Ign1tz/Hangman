@@ -1,4 +1,5 @@
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
@@ -12,16 +13,43 @@ import java.util.stream.*;
 
 public class Hangman{
     public static String word;
-    public static int fileCounter = 2;
-    public static String[] fileNames = new String[fileCounter()];
+    public static int numberOfFiles() throws IOException {
+        int numberOfFiles;
+        Stream<String> lines = Files.lines(Paths.get("settings.json"));
+         numberOfFiles = Integer.parseInt(lines.skip(4).findFirst().get());
+        return numberOfFiles;
+    }
+    public static int actualNumberOfFiles() throws IOException {
+        int actualNumberOfFiles = numberOfFiles();
+        return actualNumberOfFiles;
+    }
+    public static int activeFile() throws IOException {
+        int activeFile = numberOfFiles() - 2;
+        return activeFile;
+    }
+    public static String[] fileNames;
+
+    static {
+        try {
+            fileNames = new String[numberOfFiles()];
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static boolean isNewFile = false, wordAlreadyPicked;
     public static void boot() throws IOException, InterruptedException {
-        fileNames[0] = "resetLibrary.txt";
-        fileNames[1] = "currentLibrary.json";
+        numberOfFiles();
+        activeFile();
+        addFileNames();
+        /*fileNames[0] = "settings.json";
+        fileNames[1] = "resetLibrary.json";
+        fileNames[2] = "currentLibrary.json";*/
         try{
             Path newFilePath = Paths.get(fileNames[0]);
             Files.createFile(newFilePath);
             newFilePath = Paths.get(fileNames[1]);
+            Files.createFile(newFilePath);
+            newFilePath = Paths.get(fileNames[2]);
             Files.createFile(newFilePath);
         } catch (IOException e) {
         }
@@ -30,23 +58,23 @@ public class Hangman{
         System.out.println("Initializing: ");
         converter.convert();
     }
-    //TODO add config file
-    //TODO (add fileNames file)
-    public static boolean newFile(){
-
-        return isNewFile;
-    }
-    public static int fileCounter(){
-
-        return fileCounter;
+    public static void addFileNames() throws IOException {
+        int count = 1, linesSettings = (int) countLinesSettings(), numberOfFiles = numberOfFiles();
+        String temp;
+        while(count <= numberOfFiles){
+            for(int n = 14; n < linesSettings; n++){
+                Stream<String> lines = Files.lines(Paths.get("settings.json"));
+                temp = lines.skip(n).findFirst().get();
+                fileNames[n-14] = temp;
+                count++;
+            }
+        }
     }
     public static String[] fileNames(){
 
         return fileNames;
     }
-    //TODO get fileCounter form config file
-    //TODO get all fileNames form config/fileNames file
-    public static void makeFile( String newFile) throws InterruptedException, IOException {
+    public static void makeFile(int actualNumberOfFiles,String newFile) throws InterruptedException, IOException {
         Path newFilePath = Paths.get(newFile + ".json");
         Files.createFile(newFilePath);
         String newFileName = newFile + ".json";
@@ -58,15 +86,15 @@ public class Hangman{
         System.out.println("1");
         TimeUnit.SECONDS.sleep(1);
         System.out.println("Saving to new File!");
-        System.out.println(newFileName);
-        converter.readToNewFile(newFileName);
+        converter.readToNewFile(actualNumberOfFiles, newFileName);
     }
     public static void prepFile() throws IOException {
-        FileWriter writer = new FileWriter(fileNames[1], true);
+        FileWriter writer = new FileWriter("currentLibrary.json", true);
         BufferedWriter bwriter = new BufferedWriter(writer);
         bwriter.newLine();
     }
     public static void menu() throws IOException, InterruptedException {
+        actualNumberOfFiles();
         clearConsole();
         wordAlreadyPicked = false;
         Scanner scan = new Scanner(System.in);
@@ -123,7 +151,7 @@ public class Hangman{
             }
         }
         if(checkForDuplicates(input) == 0) {
-            FileWriter writer = new FileWriter(fileNames[1], true);
+            FileWriter writer = new FileWriter("currentLibrary.json", true);
             BufferedWriter bwriter  = new BufferedWriter(writer);
             bwriter.write(input);
             bwriter.newLine();
@@ -140,7 +168,6 @@ public class Hangman{
     }
     public static void hangman() throws IOException, InterruptedException {
         clearConsole();
-        System.out.println(wordAlreadyPicked);
         Scanner scan = new Scanner(System.in);
         String guessedLetters;
         int stop = 0,  numberOfUnderscores = 0, failedTrys = 0;
@@ -365,8 +392,7 @@ public class Hangman{
             }
             System.out.println("Please select yes or no!");
             commands(scan, input, play);
-        }
-        if(Objects.equals(input, "/loadNewData")){
+        }/*else if(Objects.equals(input, "/loadNewData")){
             System.out.println("Do you want to load new data?");
             System.out.print("[y/n]: ");
             String choice = scan.nextLine();
@@ -377,40 +403,62 @@ public class Hangman{
             }
             System.out.println("Please select yes or no!");
             commands(scan, input, play);
-        }
-        if(Objects.equals(input, "/resetData")){
+        }*/else if(Objects.equals(input, "/resetData")){
             System.out.println("Do you want to reset data?");
             System.out.print("[y/n]: ");
             String choice = scan.nextLine();
             if(Objects.equals(choice, "y") || Objects.equals(choice, "Y") || Objects.equals(choice, "yes") || Objects.equals(choice, "Yes")){
-                converter.reset();
+                converter.resetToStartingWords();
             }else if (Objects.equals(choice, "n") || Objects.equals(choice, "N") || Objects.equals(choice, "no") || Objects.equals(choice, "NO")){
                 writeIntoFile();
             }
             System.out.println("Please select yes or no!");
             commands(scan, input, play);
-        }
-        if(Objects.equals(input, "/saveCurrentLibrary")){
+        }else if(Objects.equals(input, "/saveCurrentLibrary")){
             saveLibrary(scan);
-        }
-        if(Objects.equals(input, "/help")){
+        }else if(Objects.equals(input, "/help")){
             System.out.println();
             System.out.println();
             System.out.println("Possible commands:");
             System.out.println("/exit : Exit to menu.");
-            System.out.println("/loadNewData : Loads new words from source file.");
             System.out.println("/resetData : Resets active library to match source file.");
             System.out.println("/saveCurrentLibrary : Saves current library of word to new file.");
+            System.out.println("/LoadLibrary : Loads different library into current library.");
             System.out.println("/help : Opens help menu.");
+        }else if(Objects.equals(input, "/loadLibrary")){
+            loadLibrary(scan);
         }
         writeIntoFile();
     }
     //TODO add command and ability to remove words
+    //TODO add command to clear current library
+    public static void loadLibrary(Scanner scan) throws IOException, InterruptedException {
+        System.out.println("Do you want to load a different library?");
+        System.out.print("[y/n]: ");
+        int count = 1, desired;
+        String temp;
+        String choice = scan.nextLine();
+        if(Objects.equals(choice, "y") || Objects.equals(choice, "Y") || Objects.equals(choice, "yes") || Objects.equals(choice, "Yes")){
+            for(int i = 0; i < fileNames.length; i++){
+                System.out.println( count + ": "+ fileNames[i]);
+                count++;
+            }
+            desired = scan.nextInt();
+            temp = fileNames[desired - 1];
+            converter.loadLibrary(temp);
+        }else if (Objects.equals(choice, "n") || Objects.equals(choice, "N") || Objects.equals(choice, "no") || Objects.equals(choice, "NO")){
+            writeIntoFile();
+        }
+        System.out.println("Please select yes or no!");
+        loadLibrary(scan);
+    }
     public static void saveLibrary(Scanner scan) throws IOException, InterruptedException {
         System.out.println("Do you want to save current word library?");
         System.out.print("[y/n]: ");
         String choice = scan.nextLine();
         String newFile;
+        int actualNumberOfFiles = actualNumberOfFiles();
+        int activeFile = activeFile();
         if(Objects.equals(choice, "y") || Objects.equals(choice, "Y") || Objects.equals(choice, "yes") || Objects.equals(choice, "Yes")){
             System.out.print("Choose a name: ");
             choice = scan.nextLine();
@@ -427,11 +475,12 @@ public class Hangman{
                             saveLibrary(scan);
                         }
                     }
-                    fileCounter = fileNames.length + 1;
+                    actualNumberOfFiles++;
+                    activeFile++;
                     updateFileNames();
                     newFile = choice;
                     isNewFile = true;
-                    makeFile(newFile);
+                    makeFile(actualNumberOfFiles, newFile);
                 }
             }
         }else if(Objects.equals(choice, "n") || Objects.equals(choice, "N") || Objects.equals(choice, "no") || Objects.equals(choice, "NO")){
@@ -442,19 +491,25 @@ public class Hangman{
     }
     public static long countLines() throws IOException {
         long lines = 0;
-        BufferedReader reader = new BufferedReader(new FileReader(fileNames[1]));
+        BufferedReader reader = new BufferedReader(new FileReader("currentLibrary.json"));
             while(reader.readLine() != null){
                 lines++;
             }
         return lines;
     }
+    public static long countLinesSettings() throws IOException {
+        long lines = 0;
+        BufferedReader reader = new BufferedReader(new FileReader("settings.json"));
+        while(reader.readLine() != null){
+            lines++;
+        }
+        return lines;
+    }
     public static String readRandomFromFile() throws IOException {
         int n = (int) randomNumber();
         String line = null;
-        Stream<String> lines = Files.lines(Paths.get(fileNames[1]));
+        Stream<String> lines = Files.lines(Paths.get("currentLibrary.jsonF"));
             line = lines.skip(n).findFirst().get();
-            System.out.println(line);
-
         return line;
     }
     public static double randomNumber() throws IOException {
@@ -468,7 +523,7 @@ public class Hangman{
         String line;
         int duplicate = 0;
         for(int n = 0; n < (int) countLines(); n++) {
-            line = Files.readAllLines(Paths.get(fileNames[1])).get(n);
+            line = Files.readAllLines(Paths.get("currentLibrary.json")).get(n);
             assert line != null;
             if(line.equals(input)){
                 duplicate = 1;
@@ -482,7 +537,7 @@ public class Hangman{
         for(int i = 0; i < wordToGuess.length; i++){
             if(wordToGuess[0] > 96 && wordToGuess[0] < 123){
                 if(checkForDuplicates(input) == 0) {
-                    FileWriter writer = new FileWriter(fileNames[1], true);
+                    FileWriter writer = new FileWriter("currentLibrary.json", true);
                     BufferedWriter bwriter = new BufferedWriter(writer);
                     bwriter.write(input);
                     bwriter.newLine();
@@ -491,8 +546,8 @@ public class Hangman{
             }
         }
     }
-    public static void updateFileNames(){
-        String[] temp = new String[fileNames.length + 1];
+    public static void updateFileNames() throws IOException {
+        String[] temp = new String[numberOfFiles()];
         for(int i = 0; i < fileNames.length; i++){
             temp[i] = fileNames[i];
         }
