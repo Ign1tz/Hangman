@@ -6,13 +6,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class converter {
-    public static String[] fileName = Hangman.fileNames();
-    public static boolean newFile = Hangman.isNewFile;
+    public static String[] fileName = Boot.fileNames();
+    public static boolean newFile = Boot.isNewFile;
     public static int actualNumberOfFiles;
 
     static {
         try {
-            actualNumberOfFiles = Hangman.actualNumberOfFiles();
+            actualNumberOfFiles = Boot.actualNumberOfFiles();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -20,6 +20,31 @@ public class converter {
 
     public static void convert() throws IOException, InterruptedException {
         lowercase();
+    }
+    public static void lowercase() throws IOException, InterruptedException {
+        double percent, start = countLinesReset();;
+        int count = (int) countLinesReset();
+        String line;
+        double n = 0;
+        while(n <  count) {
+            Stream<String> lines = Files.lines(Paths.get("resetLibrary.json"));
+            line = lines.skip((int) n).findFirst().get();
+            char[] temp = line.toCharArray();
+            for (int x = 0; x < temp.length; x++) {
+                if ((int) temp[x] < 91 && (int) temp[x] > 64) {
+                    temp[x] = (char) (temp[x] + 32);
+                } else if (temp[x] == 'ä' || temp[x] == 'Ä' || temp[x] == 'ö' || temp[x] == 'Ö' || temp[x] == 'ü' || temp[x] == 'Ü') {
+                    break;
+                } else if(x == temp.length - 1){
+                    Write(temp);
+                }
+            }
+            n++;
+            percent = (n / start) * 100;
+            System.out.print(percent((int) percent) + (int) percent + "%\r");
+        }
+        TimeUnit.SECONDS.sleep(1);
+        Hangman.menu();
     }
     public static double countLinesReset() throws IOException {
         double lines = 0;
@@ -45,32 +70,15 @@ public class converter {
         }
         return lines;
     }
-    public static void lowercase() throws IOException, InterruptedException {
-        double percent, start = countLinesReset();;
-        int count = (int) countLinesReset();
-        String line;
-        double n = 0;
-        while(n <  count) {
-            Stream<String> lines = Files.lines(Paths.get("resetLibrary.json"));
-            line = lines.skip((int) n).findFirst().get();
-            char[] temp = line.toCharArray();
-            for (int x = 0; x < temp.length; x++) {
-                if ((int) temp[x] < 91 && (int) temp[x] > 64) {
-                    temp[x] = (char) (temp[x] + 32);
-                } else if (temp[x] == 'ä' || temp[x] == 'Ä' || temp[x] == 'ö' || temp[x] == 'Ö' || temp[x] == 'ü' || temp[x] == 'Ü') {
-                    break;
-                } else if(x == temp.length - 1){
-                    readWrite(temp);
-                }
-            }
-            n++;
-            percent = (n / start) * 100;
-            System.out.print(percent((int) percent) + (int) percent + "%\r");
+    public static long countLinesSettings() throws IOException {
+        long lines = 0;
+        BufferedReader reader = new BufferedReader(new FileReader("settings.json"));
+        while(reader.readLine() != null){
+            lines++;
         }
-        TimeUnit.SECONDS.sleep(1);
-        Hangman.menu();
+        return lines;
     }
-    public static void readWrite(char[] temp) throws IOException {
+    public static void Write(char[] temp) throws IOException {
         String  testLine;
         boolean clear = false;
         double lineCount = countLinesCurrent();
@@ -103,7 +111,7 @@ public class converter {
         new FileWriter("currentLibrary.json", false).close();
         lowercase();
     }
-    public static void readToNewFile(int actualNumberOfFiles, String newFile) throws IOException, InterruptedException {
+    public static void writeToNewFile(int actualNumberOfFiles, String newFile) throws IOException, InterruptedException {
         String word;
         int count = (int) countLinesCurrent();
         for(int x = 0; x < count; x++){
@@ -115,6 +123,11 @@ public class converter {
         }
         editSettings(newFile, actualNumberOfFiles);
         Hangman.menu();
+    }
+    public static void loadLibrary(String whatToLoad) throws IOException, InterruptedException {
+        reset();
+        int newLibraryLines = (int) countLinesNew(whatToLoad);
+        loadToCurrentLibrary(newLibraryLines, whatToLoad);
     }
     public static void loadToCurrentLibrary(int count, String whatToLoad) throws IOException, InterruptedException {
         String word;
@@ -139,6 +152,27 @@ public class converter {
         BufferedWriter bwriter = new BufferedWriter(writer);
         bwriter.write(word);
         bwriter.newLine();
+        bwriter.close();
+    }
+    public static void editSettings(String newFile, int actualNumberOfFiles) throws IOException {
+        FileWriter writer = new FileWriter("settings.json");
+        BufferedWriter bwriter = new BufferedWriter(writer);
+        LineNumberReader reader = new LineNumberReader(new FileReader("settings.json"));
+        reader.setLineNumber(5);
+        for(int i = 1; i < reader.getLineNumber(); i++){
+            bwriter.newLine();
+        }
+        bwriter.write(String.valueOf(actualNumberOfFiles));
+        bwriter.newLine();
+        reader.setLineNumber(10);
+        for(int i = 1; i < reader.getLineNumber(); i++){
+            bwriter.newLine();
+        }
+        for(int i = 0; i < fileName.length; i++) {
+            bwriter.write(fileName[i]);
+            bwriter.newLine();
+        }
+        bwriter.write(newFile);
         bwriter.close();
     }
     public static String percent(int percent) throws IOException {
@@ -178,32 +212,6 @@ public class converter {
         }
 
         return visualPercent;
-    }
-    public static void editSettings(String newFile, int actualNumberOfFiles) throws IOException {
-        FileWriter writer = new FileWriter("settings.json");
-        BufferedWriter bwriter = new BufferedWriter(writer);
-        LineNumberReader reader = new LineNumberReader(new FileReader("settings.json"));
-        reader.setLineNumber(5);
-        for(int i = 1; i < reader.getLineNumber(); i++){
-            bwriter.newLine();
-        }
-        bwriter.write(String.valueOf(actualNumberOfFiles));
-        bwriter.newLine();
-        reader.setLineNumber(10);
-        for(int i = 1; i < reader.getLineNumber(); i++){
-            bwriter.newLine();
-        }
-        for(int i = 0; i < fileName.length; i++) {
-            bwriter.write(fileName[i]);
-            bwriter.newLine();
-        }
-        bwriter.write(newFile);
-        bwriter.close();
-    }
-    public static void loadLibrary(String whatToLoad) throws IOException, InterruptedException {
-        reset();
-        int newLibraryLines = (int) countLinesNew(whatToLoad);
-        loadToCurrentLibrary(newLibraryLines, whatToLoad);
     }
     public static void reset() throws IOException{
         new FileWriter("currentLibrary.json", false).close();
