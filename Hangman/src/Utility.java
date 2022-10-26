@@ -55,7 +55,7 @@ public class Utility {
             System.out.println("/clearLibrary : Clears active library.");
             System.out.println("/resetData : Resets active library to match source file.");
             System.out.println("/saveCurrentLibrary : Saves active library to new file.");
-            System.out.println("/LoadLibrary : Loads different library into active library.");
+            System.out.println("/loadLibrary : Loads different library into active library.");
             System.out.println("/help : Opens help menu.");
         }else if(Objects.equals(input, "/loadLibrary")){
             loadLibrary(scan);
