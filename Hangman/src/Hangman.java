@@ -262,7 +262,7 @@ public class Hangman{
     public static String readRandomFromFile() throws IOException {
         int n = (int) Utility.randomNumber();
         String line;
-        Stream<String> lines = Files.lines(Paths.get("currentLibrary.jsonF"));
+        Stream<String> lines = Files.lines(Paths.get("currentLibrary.json"));
             line = lines.skip(n).findFirst().get();
         return line;
     }
