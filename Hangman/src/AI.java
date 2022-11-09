@@ -8,38 +8,38 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 public class AI {
-        public static int a = 0;
-        public static int b = 0;
-        public static int c = 0;
-        public static int d = 0;
-        public static int e = 0;
-        public static int f = 0;
-        public static int g = 0;
-        public static int h = 0;
-        public static int i = 0;
-        public static int j = 0;
-        public static int k = 0;
-        public static int l = 0;
-        public static int m = 0;
-        public static int n = 0;
-        public static int o = 0;
-        public static int p = 0;
-        public static int q = 0;
-        public static int r = 0;
-        public static int s = 0;
-        public static int t = 0;
-        public static int u = 0;
-        public static int v = 0;
-        public static int w = 0;
-        public static int x = 0;
-        public static int y = 0;
-        public static int z = 0;
+    public static double a = 0.097;
+    public static double b = 0.098;
+    public static double c = 0.099;
+    public static double d = 0.1;
+    public static double e = 0.101;
+    public static double f = 0.102;
+    public static double g = 0.103;
+    public static double h = 0.104;
+    public static double i = 0.105;
+    public static double j = 0.106;
+    public static double k = 0.107;
+    public static double l = 0.108;
+    public static double m = 0.109;
+    public static double n = 0.11;
+    public static double o = 0.111;
+    public static double p = 0.112;
+    public static double q = 0.113;
+    public static double r = 0.114;
+    public static double s = 0.115;
+    public static double t = 0.116;
+    public static double u = 0.117;
+    public static double v = 0.118;
+    public static double w = 0.119;
+    public static double x = 0.12;
+    public static double y = 0.121;
+    public static double z = 0.122;
 
     public static void preperation() throws IOException {
         String line;
         char tempChar;
         for(int count = 0; count < (int) countLines(); count++){
-            Stream<String> lines = Files.lines(Paths.get("currentLibrary.txt"));
+            Stream<String> lines = Files.lines(Paths.get("currentLibrary.json"));
             line = lines.skip(count).findFirst().get();
             char[] temp = line.toCharArray();
             for(int letter = 0; letter < line.length(); letter++){
@@ -47,9 +47,13 @@ public class AI {
                 letter(tempChar);
             }
         }
-        Integer[] frequency = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z};
+        Double[] frequency = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z};
         Arrays.sort(frequency, Collections.reverseOrder());
-        System.out.println( Arrays.toString(frequency));
+        for(int count = 0; count < frequency.length; count++){
+            int temp = (int) ((frequency[count] * 1000) % 1000);
+            int temp2 = (int) (frequency[count] - temp / 1000);
+            System.out.println( (char) temp + ": " + temp2 + "; ");
+        }
     }
     public static void letter(char temp){
         switch (temp){
@@ -135,16 +139,16 @@ public class AI {
     }
     public static double countLines() throws IOException {
         double lines = 0;
-        BufferedReader reader = new BufferedReader(new FileReader("currentLibrary.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("currentLibrary.json"));
         while(reader.readLine() != null){
             lines++;
         }
         return lines;
     }
     public static void main(String[] args) throws IOException, InterruptedException {
-        /*int temp = 97;
+        /*double temp = 97;
         for(int i = 1; i <= 26; i++) {
-            System.out.print((char) temp +", ");
+            System.out.println("public static double "+ (char) temp + " = " + temp/1000 + ";");
             temp++;
         }*/
         preperation();
